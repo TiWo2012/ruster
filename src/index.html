@@ -1,20 +1,148 @@
-<!DOCTYPE html>
 
-<html>
-  <head>
-    <title>My Simple Web Server</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple To-Do App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+        }
+        #todo-form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        #todo-input {
+            padding: 10px;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #add-button {
+            padding: 10px;
+            margin-left: 10px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #add-button:hover {
+            background-color: #218838;
+        }
+        #todo-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: white;
+            margin: 5px 0;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .remove-button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .remove-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>To-Do List</h1>
+    <div id="todo-form">
+        <input type="text" id="todo-input" placeholder="Add a new task..." />
+        <button id="add-button">Add</button>
+    </div>
+    <ul id="todo-list"></ul>
 
     <script>
-      function test() {
-        console.log("test");
-      }
+        const todoInput = document.getElementById('todo-input');
+        const addButton = document.getElementById('add-button');
+        const todoList = document.getElementById('todo-list');
+
+        // Load tasks from local storage
+        function loadTasks() {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.forEach(task => addTaskToDOM(task));
+        }
+
+        // Add task to the DOM
+        function addTaskToDOM(task) {
+            const li = document.createElement('li');
+            li.className = 'todo-item';
+            li.textContent = task;
+
+            const removeButton = document.createElement('button');
+            removeButton.className = 'remove-button';
+            removeButton.textContent = 'Remove';
+            removeButton.onclick = () => {
+                removeTask(task);
+            };
+
+            li.appendChild(removeButton);
+            todoList.appendChild(li);
+        }
+
+        // Add task to local storage
+        function addTask() {
+            const task = todoInput.value.trim();
+            if (task) {
+                addTaskToDOM(task);
+                saveTask(task);
+                todoInput.value = '';
+            }
+        }
+
+        // Save task to local storage
+        function saveTask(task) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            tasks.push(task);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        // Remove task from local storage
+        function removeTask(task) {
+            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            const updatedTasks = tasks.filter(t => t !== task);
+            localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+            renderTasks();
+        }
+
+        // Render tasks from local storage
+        function renderTasks() {
+            todoList.innerHTML = '';
+            loadTasks();
+        }
+
+        // Event listeners
+        addButton.addEventListener('click', addTask);
+        todoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+        // Load tasks on page load
+        loadTasks();
     </script>
-  </head>
 
-  <body>
-    <h1>Hello, World!</h1>
-    <p>This is a simple web server.</p>
-
-    <button onclick="test()">Test</button>
-  </body>
+</body>
 </html>
+
